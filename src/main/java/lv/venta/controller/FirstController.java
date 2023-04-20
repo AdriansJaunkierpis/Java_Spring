@@ -19,4 +19,7 @@ public class FirstController {
 		model.addAttribute("packet", "WorldHello");
 		return "msg";
 	}
+	
+	//TODO Product class - title, description, price, quantity
+	//TODO controller function which will send new product to fronted
 }
