@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import lv.venta.model.Product;
@@ -76,5 +77,54 @@ public class FirstController {
 		}
 		model.addAttribute("packetError", "Wrong ID");
 		return "error-page"; //will call error-page , with error would call on any errors
+	}
+	
+	@GetMapping ("/add-product")
+	public String getAddProductFunc(Model model) {
+		model.addAttribute("product", new Product());
+		return "add-product";
+	}
+	
+	@PostMapping("/add-product")
+	public String postAddProductFunc(Product product) {
+		//TODO verify if this product already exists
+		Product newProduct = new Product(product.getTitle(), product.getDescription(), product.getPrice(), product.getQuantity());
+		allProducts.add(newProduct);
+		
+		return "redirect:/all-products";
+	}
+	
+	@GetMapping("/update-product/{id}")
+	public String getUpdateProductFunc(@PathVariable("id") long id, Model model) {
+		if (id > 0) {
+			for (Product temp: allProducts) {
+				if (temp.getId() == id) {
+					model.addAttribute("product", temp);
+					return "update-product";
+				}
+			}
+		}
+		model.addAttribute("packetError", "Wrong ID");
+		return "error-page";
+	}
+	@PostMapping("/update-product/{id}") 
+	public String postUpdateProductFunc(@PathVariable("id") long id, Product product) {
+		for (Product temp: allProducts) {
+			if (temp.getId() == id) {
+				temp.setTitle(product.getTitle());
+				temp.setDescription(product.getDescription());
+				temp.setPrice(product.getPrice());
+				temp.setQuantity(product.getQuantity());
+				
+				return "redirect:/all-products/"+id; //will call localhost:8080/all-products/2 endpoint
+			}
+		}
+		return "redirect:/error"; // will call localhost:8080/error
+	}
+	
+	@GetMapping("/error")
+	public String getErrorFunc(Model model) {
+		model.addAttribute("packetError", "Wrong id");
+		return "/error";
 	}
 }
