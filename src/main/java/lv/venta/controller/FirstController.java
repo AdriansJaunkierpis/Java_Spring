@@ -127,4 +127,19 @@ public class FirstController {
 		model.addAttribute("packetError", "Wrong id");
 		return "/error";
 	}
+	
+	@GetMapping("/delete-product/{id}")
+	public String getDeleteProductFunc(@PathVariable("id") long id, Model model) {
+		if (id > 0) {
+			for (Product temp: allProducts) {
+				if (temp.getId() == id) {
+					allProducts.remove(temp);
+					model.addAttribute("packet", allProducts);
+					return "all-products";
+				}
+			}
+		}
+		model.addAttribute("packetError", "Wrong ID");
+		return "error-page";
+	}
 }
