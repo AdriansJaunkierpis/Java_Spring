@@ -1,12 +1,26 @@
 package lv.venta.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import lv.venta.model.Product;
 
 @Controller
 public class FirstController {
 
+	private ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(
+		new Product("Pear", "U124", 1.2f, 9),
+		new Product("Tree", "Apple", 200.2f, 3),
+		new Product("Car", "Cool", 5000.99f, 1)
+		));
+	
+	
 	@GetMapping("/hello") //localhost:8080/hello
 	public String getHelloFunc() {
 		System.out.println("Sveiki!");
@@ -21,5 +35,46 @@ public class FirstController {
 	}
 	
 	//TODO Product class - title, description, price, quantity
+	
 	//TODO controller function which will send new product to fronted
+	@GetMapping("/one-product")
+	public String getOneProductFunc(Model model) {
+		Product prod = new Product("Pear", "U124", 1.2f, 9);
+		model.addAttribute("packet", prod);
+		return "one-product";
+	}
+	
+	@GetMapping("/all-products")
+	public String getAllProductsFunc(Model model) {
+		model.addAttribute("packet", allProducts);
+		return "all-products";
+	}
+	
+	@GetMapping("/all-products-find")
+	public String getAllProductsFindFunc(@RequestParam("id") long id, Model model) { //all-products-find?id=2
+		if (id > 0) {
+			for (Product temp: allProducts) {
+				if(temp.getId() == id) {
+					model.addAttribute("packet", temp);
+					return "one-product";
+				}
+			}
+		}
+		model.addAttribute("packetError", "Wrong ID");
+		return "error-page"; //will call error-page , with error would call on any errors
+	}
+	
+	@GetMapping("/all-products/{id}")
+	public String getAllProductsByIdFunc(@PathVariable("id") long id, Model model) { //all-products-find?/2
+		if (id > 0) {
+			for (Product temp: allProducts) {
+				if(temp.getId() == id) {
+					model.addAttribute("packet", temp);
+					return "one-product";
+				}
+			}
+		}
+		model.addAttribute("packetError", "Wrong ID");
+		return "error-page"; //will call error-page , with error would call on any errors
+	}
 }
