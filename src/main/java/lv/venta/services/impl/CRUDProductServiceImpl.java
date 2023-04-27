@@ -60,16 +60,18 @@ public class CRUDProductServiceImpl implements ICRUDProductService {
 	}
 
 	@Override
-	public void updateProductById(long id, String title, String description, float price, int quantity)
-			throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void updateProductById(long id, String title, String description, float price, int quantity) throws Exception {
+			Product prod = retrieveProductById(id);
+			prod.setTitle(title);
+			prod.setDescription(description);
+			prod.setPrice(price);
+			prod.setQuantity(quantity);
 	}
 
 	@Override
 	public void deleteProductById(long id) throws Exception {
-		// TODO Auto-generated method stub
-		
+		Product prod = retrieveProductById(id);
+		allProducts.remove(prod);
 	}
 
 	
