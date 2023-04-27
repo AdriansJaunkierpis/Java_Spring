@@ -56,7 +56,7 @@ public class FirstController {
 		
 		try {
 			Product prod = CRUDService.retrieveProductById(id);
-			model.addAttribute(prod);
+			model.addAttribute("packet", prod);
 			return "one-product-page";
 		} catch (Exception e) {
 			model.addAttribute("packetError", e.getMessage());
