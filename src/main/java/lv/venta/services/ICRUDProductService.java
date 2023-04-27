@@ -16,7 +16,7 @@ public interface ICRUDProductService {
 	ArrayList<Product> retrieveAllProducts();
 		
 	// retrieve by id
-	Product getProductById(long id) throws Exception;
+	Product retrieveProductById(long id) throws Exception;
 	//U - update
 	void updateProductById(long id, String title, String description, float price, int quantity) throws Exception;
 	//D - delete
