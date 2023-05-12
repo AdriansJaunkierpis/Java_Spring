@@ -3,76 +3,85 @@ package lv.venta.services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lv.venta.model.Product;
+import lv.venta.repos.IProductRepo;
 import lv.venta.services.ICRUDProductService;
 
 @Service
 public class CRUDProductServiceImpl implements ICRUDProductService {
 
-	
-	private ArrayList<Product> allProducts = new ArrayList<>(Arrays.asList(
-			new Product("Pear", "U124", 1.2f, 9),
-			new Product("Tree", "Apple", 200.2f, 3),
-			new Product("Car", "Cool", 5000.99f, 1)
-			));
-	
+	@Autowired
+	private IProductRepo productRepo;
+
 	@Override
 	public void addNewProduct(String title, String description, float price, int quantity) throws Exception {
-		//TODO verify with regex title and description
-		if (title != null && description != null && price > 0 && price < 10000 && quantity > 0 && quantity < 100000) {
-			boolean isFound = false;
-			for (Product temp: allProducts) {
-				if (temp.getTitle().equals(title) && temp.getDescription().equals(description) && temp.getPrice() == price) {
-					temp.setQuantity(temp.getQuantity() + quantity);
-					isFound = true;
-					break;
-				}
-				if (!isFound) {
-					Product newProduct = new Product(title, description, price, quantity);
-					allProducts.add(newProduct);
-				}
-			}
+
+		if (productRepo.existsByTitleAndDescriptionAndPrice(title, description, price)) {
+			Product temp = productRepo.findByTitleAndDescriptionAndPrice(title, description, price);
+			temp.setQuantity(temp.getQuantity() + quantity);
+			productRepo.save(temp);// in this case the existing product will be updated in DB
 		} else {
-			throw new Exception("Incorrect params");
+			Product newProduct = new Product(title, description, price, quantity);
+			productRepo.save(newProduct);// in this case - new product will be saved in DB
 		}
-		
 	}
 
 	@Override
 	public ArrayList<Product> retrieveAllProducts() {
-		return allProducts;
+		return (ArrayList<Product>) productRepo.findAll();
 	}
 
 	@Override
 	public Product retrieveProductById(long id) throws Exception {
 		if (id > 0) {
-			for (Product temp: allProducts) {
-				if (temp.getId() == id) {
-					return temp;
-				}
+
+			if (productRepo.existsById(id)) {
+				Product temp = productRepo.findById(id).get();
+				return temp;
+			} else {
+				throw new Exception("There is not product with this ID");
 			}
-			throw new Exception("ID does not correspond to product");
 		} else {
-			throw new Exception("ID must be positive");
+			throw new Exception("ID need to be positive");
 		}
 	}
 
 	@Override
 	public void updateProductById(long id, String title, String description, float price, int quantity) throws Exception {
-			Product prod = retrieveProductById(id);
-			prod.setTitle(title);
-			prod.setDescription(description);
-			prod.setPrice(price);
-			prod.setQuantity(quantity);
+		if (id > 0) {
+			// verify if this product exists with this id
+			if (productRepo.existsById(id)) {
+				// true -> get this product from database
+				Product temp = productRepo.findById(id).get();
+				// set all paramaters
+				temp.setTitle(title);
+				temp.setDescription(description);
+				temp.setPrice(price);
+				temp.setQuantity(quantity);
+				// save updated produvct in DB
+				productRepo.save(temp);
+
+			} else {
+				throw new Exception("There is not product with this ID");
+			}
+
+		} else {
+			throw new Exception("ID need to be positive");
+		}
 	}
 
 	@Override
 	public void deleteProductById(long id) throws Exception {
-		Product prod = retrieveProductById(id);
-		allProducts.remove(prod);
+
+		if (productRepo.existsById(id)) {
+			productRepo.deleteById(id);
+		} else {
+			throw new Exception("There is not product with this ID");
+		}
+
 	}
 
-	
 }

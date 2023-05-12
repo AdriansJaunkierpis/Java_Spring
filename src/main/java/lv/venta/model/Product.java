@@ -1,7 +1,10 @@
 package lv.venta.model;
 
+import org.hibernate.annotations.GenerationTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -38,7 +41,7 @@ public class Product {
 	
 	@Column(name = "Id")
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
 	public String getTitle() {
