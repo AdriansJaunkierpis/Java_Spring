@@ -1,5 +1,8 @@
 package lv.venta.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +10,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class Product {
+	
+	@Column(name = "Title")//H2 -> TITLE, Mysql -> title
 	@NotNull
 	@Pattern(regexp = "[A-Z]{1}[a-z\\ ]+")
 	@Size(min = 4, max = 100)
@@ -14,23 +19,28 @@ public class Product {
 	@Pattern(regexp = "[A-Z]{1}[a-z\\ ]+", message = "Only Latin letters and space")//only latin letters and space
 	private String title;
 
-
+	@Column(name = "Description")
 	@NotNull
 	@Size(min = 5, max =400)
 	@Pattern(regexp = "[A-Z]{1}[a-z0-9\\ ]+", message = "Only Latin letters and space")//only latin letters and space
 	private String description;
 
-
+	@Column(name = "Price")
 	@Min(0)
 	@Max(10000)
 	private float price;
 
+	@Column(name = "Quantity")
 	@Min(0)
 	@Max(100000)
 	@Max(1000000)
 	private int quantity;
+	
+	@Column(name = "Id")
+	@Id
+	@GeneratedValue
 	private long id;
-	private static long idCounter = 1;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -58,11 +68,8 @@ public class Product {
 	public long getId() {
 		return id;
 	}
-	public void setId() {
-		this.id = idCounter++;
-	}
+
 	public Product(String title, String description, float price, int quantity) {
-		setId();
 		this.title = title;
 		this.description = description;
 		this.price = price;
